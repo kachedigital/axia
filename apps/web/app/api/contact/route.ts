@@ -7,14 +7,32 @@ import ContactFormEmail from '@/emails/contact-form-email';
 
 export const runtime = 'edge';
 
-// Rate limiter: 3 messages per 60 seconds
-const ratelimit = new Ratelimit({
-    redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(3, "60 s"),
-    analytics: true,
-});
+// Rate limiter setup (Lazy initialization)
+let ratelimit: Ratelimit | null = null;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getRatelimit() {
+    if (!ratelimit) {
+        const url = process.env.UPSTASH_REDIS_REST_URL;
+        const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+        if (url && token) {
+            ratelimit = new Ratelimit({
+                redis: new Redis({ url, token }),
+                limiter: Ratelimit.slidingWindow(3, "60 s"),
+                analytics: true,
+            });
+        }
+    }
+    return ratelimit;
+}
+
+let resendClient: Resend | null = null;
+function getResend() {
+    if (!resendClient && process.env.RESEND_API_KEY) {
+        resendClient = new Resend(process.env.RESEND_API_KEY);
+    }
+    return resendClient;
+}
 
 const contactSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -25,14 +43,17 @@ const contactSchema = z.object({
 
 export async function POST(req: Request) {
     // Rate Limiting
-    const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    const { success } = await ratelimit.limit(ip);
+    const limiter = getRatelimit();
+    if (limiter) {
+        const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+        const { success } = await limiter.limit(ip);
 
-    if (!success) {
-        return NextResponse.json(
-            { error: "Too many requests. Please try again later." },
-            { status: 429 }
-        );
+        if (!success) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again later." },
+                { status: 429 }
+            );
+        }
     }
 
     if (!process.env.RESEND_API_KEY) {
@@ -53,6 +74,11 @@ export async function POST(req: Request) {
         }
 
         const validatedData = contactSchema.parse(body);
+        const resend = getResend();
+
+        if (!resend) {
+            return NextResponse.json({ error: 'Mail transport initialization failed' }, { status: 500 });
+        }
 
         const { data, error } = await resend.emails.send({
             from: 'Kache Digital <hq@kache.digital>',

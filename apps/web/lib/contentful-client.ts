@@ -1,10 +1,10 @@
 import { createClient } from 'contentful';
 
-const spaceId = process.env.CONTENTFUL_SPACE_ID;
-const accessToken = process.env.CONTENTFUL_ACCESS_TOKEN;
+const spaceId = process.env.CONTENTFUL_SPACE_ID || 'placeholder';
+const accessToken = process.env.CONTENTFUL_ACCESS_TOKEN || 'placeholder';
 
-if (!spaceId || !accessToken) {
-    throw new Error('Missing Contentful configuration variables.');
+if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
+    console.warn('Missing Contentful configuration variables.');
 }
 
 export const client = createClient({
