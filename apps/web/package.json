@@ -1,9 +1,9 @@
 {
-  "name": "portfolio",
+  "name": "@axia/portfolio",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -22,6 +22,7 @@
     "react": "^18",
     "react-dom": "^18",
     "resend": "^6.9.2",
+    "@supabase/supabase-js": "^2.48.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
