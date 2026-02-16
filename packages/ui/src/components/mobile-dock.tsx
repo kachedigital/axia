@@ -1,16 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { LayoutGrid, Cpu, User, Send } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+// Memoized Icons for performance during scroll-depth updates
+const MemoLayoutGrid = memo(LayoutGrid);
+const MemoCpu = memo(Cpu);
+const MemoUser = memo(User);
+const MemoSend = memo(Send);
+
 const DOCK_ITEMS = [
-    { label: 'Work', href: '/', icon: LayoutGrid, ariaLabel: 'View Projects' },
-    { label: 'Services', href: '/services', icon: Cpu, ariaLabel: 'View Services' },
-    { label: 'About', href: '/about', icon: User, ariaLabel: 'View About' },
-    { label: 'Contact', href: '/contact', icon: Send, ariaLabel: 'Send Message' },
+    { label: 'Work', href: '/', icon: MemoLayoutGrid, ariaLabel: 'View Projects' },
+    { label: 'Services', href: '/services', icon: MemoCpu, ariaLabel: 'View Services' },
+    { label: 'About', href: '/about', icon: MemoUser, ariaLabel: 'View About' },
+    { label: 'Contact', href: '/contact', icon: MemoSend, ariaLabel: 'Send Message' },
 ];
 
 const SPRING_TRANSITION = {

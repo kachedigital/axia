@@ -51,7 +51,7 @@ export function ProjectCard({ data, index = 0, priority = false }: ProjectCardPr
     let aspectClass = "aspect-video";
 
     if (projectType === 'SaaS') {
-        layoutClasses = "md:col-span-4 md:row-span-1";
+        layoutClasses = "md:col-span-4 md:row-span-1 md:aspect-video";
     } else if (projectType === 'Mobile') {
         layoutClasses = "md:col-span-2 md:row-span-2";
         aspectClass = "aspect-[3/4]";

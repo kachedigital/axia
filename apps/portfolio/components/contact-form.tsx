@@ -49,6 +49,7 @@ export function ContactForm() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.3, delay: 0 }}
                         className="rounded-[2rem] border border-brand/20 bg-brand/5 p-12 text-center"
                     >
                         {/* Hidden announcement for screen readers */}
@@ -77,15 +78,17 @@ export function ContactForm() {
                         onSubmit={handleSubmit}
                         className="space-y-6"
                     >
-                        {/* Honeypot Field - Hidden for Bots */}
-                        <input
-                            type="text"
-                            name="website_url"
-                            className="hidden"
-                            aria-hidden="true"
-                            tabIndex={-1}
-                            autoComplete="off"
-                        />
+                        {/* Refined Honeypot - Hidden from humans & AOM, enticing to bots */}
+                        <div aria-hidden="true" className="sr-only">
+                            <label htmlFor="website_url">Website URL (Ignore this field)</label>
+                            <input
+                                id="website_url"
+                                type="text"
+                                name="website_url"
+                                tabIndex={-1}
+                                autoComplete="off"
+                            />
+                        </div>
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
